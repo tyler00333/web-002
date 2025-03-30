@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS核心概念 : 背景 盒模型 布局 动画</title>
+    <style>
+        body{
+          
+  background: #5e8991;
+        }
+        h1{
+            background-image: url(images/OIP-C.jfif);
+            background-position: 50% 50%;
+            background-size: width 800px ;
+            background-repeat: no-repeat;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h1>优美短篇散文</h1>
+<section>
+    <div>
+        <style>
+            h3{
+                text-align: center;
+                font-family: 楷体;
+                font-size: 40px;
+            }
+            </style>
+        <h3>出了家门，却是一腔“思情”画意</h3>
+    </div>
+    <div>
+        <p>出了家门，却是一腔“思情”</p>
+        <p> 画意曾眠在故乡的怀抱里，清晨听鸡的鸣叫敲醒沉睡的梦境，瓦房平矮低落，树林子就错落在房外。
+            还没有黄透的叶子寄来了谁苦苦的呢喃，掉落在地上带来一阵干干的响声，那响声似乎是青涩味的。倒奇怪，每一棵树仍绿意浓浓，
+            但冷冽的风又那样轻易的吹落了还未枯黄却以殆尽水分的叶。谁家的门前又植了一棵桂？香味便缠着愁思幽幽儿传来了，拥在怀里却只是满满的恬静的气味。
+            中午是舒适的，吃两三个小菜，品着简单的白米饭——可不是酒，那太有情调，太诗意！午后再憩一觉罢，等阳光来喊醒你，那便是神仙也该羡煞的生活了。</p>
+        <p>傍晚，行走在石渣路上，天儿黑的早了，已零稀的看到了星子点在黑蓝色白云幕布的天上。昏黄的路灯埋在梧桐树的臂弯，轻轻浅浅的托洒温柔安静的夜。
+            白日里还绿着的梧桐叶此刻也染上了平和的黄昏金。夜色中，它迎来了生命中最美的年华，慢慢闭上了昏昏欲睡的眼，缓缓落在树旁，结束了绚烂的生命。
+            一位倾城女子拾起飘落的叶子，用一纤纤细指细细擦拭，夹在了外壳古朴老旧的《圣经》书页里，静静地，不沾一点尘埃，然后远去了。树静默着，看女子婉约的背影渐远，消失在了一片夜色。
+            美丽女子背影渐行渐远，阿妈的呼唤却由远而近。“路边贪玩的孩子，你还不回去吗？莫让袅袅的炊烟等过了时光﹗”“就回了，就回了……”</p>
+        <p>听，归家的脚步愈来愈响……</p>
+        <style>
+            .p{
+            font-size: 30px;
+           font-family: 楷体;
+            text-indent: 2em;
+            }
+        </style>
+    </div>
+</section>
+<section>
+    <h2>盒模型</h2>
+    <style>
+      .box{
+      width : 200px;
+      height: 200px;
+      border: dashed 3px rgb(20, 68, 224);
+      padding: 20px;
+      margin-bottom: 2em;
+      border-radius: 20px;
+      display: flex;          /* 启用弹性布局 */
+      justify-content: center;
+      gap: 20px;             /* 盒子间距 */
+      align-items: center;   /* 垂直对齐方式 */ 
+      }
+    </style>
+    <div>
+        <div class="box"><p>雨だれ、石をうがつ 水滴石穿<br>
+            嘘から出た実 弄假成真</p>
+        </div>
+        <div class="box"><p>縁の下の力持ち 无名英雄<br>云泥の差 天壤之别</p></div>
+    </div>
+</section>
+<section>
+    <h2>布局</h2>
+    <style>
+        .display-demo p {
+            display: inline;
+        }
+    </style>
+    <div>
+    <h2>display的不同取值</h2>
+ <div class="display-demo">  
+     <p>英语谚语</p>
+     <p style="display: none;">段4</p>
+     <style>
+        .flex-container{
+            display:flex;
+        }
+        .flex-container p{
+            border: 2px solid chocolate;
+            margin-right: 2em;
+            padding: 10px;
+        }
+     </style>
+     <div class="flex-container">
+        <p>A bad beginning makes a bad ending. 不善始者不善终。</p>
+        <p>A bully is always a coward. 色厉内荏。</p>
+        <p>A cat may look at a king. 人人平等。</p>
+        <p>A man can do no more than he can. 凡事都应量力而行。</p>
+    </div>
+ </div>
+</div>
+</section>
+<section>
+ 
+    <title>动画</title>
+    <style>
+        .animate-box{
+            width: 100px;
+            height: 100px;
+            background-color: rgb(110, 11, 125);
+            text-align: left;
+            line-height:100px;
+            margin-top: 2em;
+        }
+        .animate-box:hover{
+            border-radius: 100px;
+            transition: all 0.5s;
+            background-color: rgb(37, 221, 188);
+            color: rgb(255, 245, 47);
+   
+        }
+    </style>
+    <div class="animate-box">动画</div>
+</section>
+</body>
+</html>
