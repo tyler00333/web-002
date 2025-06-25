@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>议程设置理论可视化报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #2A5CAA;
+            --secondary: #3E7D3E;
+            --accent: #E74C3C;
+            --light: #F8F9FA;
+            --dark: #212529;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #1a4480);
+            color: white;
+            padding: 35px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.92;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            font-weight: 300;
+            position: relative;
+        }
+        
+        .author {
+            background: rgba(0,0,0,0.2);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            margin-top: 15px;
+        }
+        
+        .content-section {
+            padding: 30px 40px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        
+        h2 {
+            color: var(--primary);
+            font-size: 1.9rem;
+            margin-bottom: 30px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid rgba(42, 92, 170, 0.2);
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2::before {
+            content: "";
+            display: block;
+            width: 8px;
+            height: 35px;
+            background: var(--primary);
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+        
+        .visual-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eef2f7;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visual-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .visual-title i {
+            margin-right: 12px;
+            font-size: 1.8rem;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eef2f7;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h3 i {
+            margin-right: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8fafd;
+        }
+        
+        tr:hover {
+            background-color: #eef5ff;
+        }
+        
+        .comparison {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            text-align: center;
+            gap: 30px;
+        }
+        
+        .comparison-item {
+            flex: 1;
+            padding: 30px 20px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .comparison-item::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+        
+        .comparison-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .comparison-item.strong::after {
+            background: var(--accent);
+        }
+        
+        .comparison-item.weak::after {
+            background: #3498DB;
+        }
+        
+        .effect-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 20px 0;
+            background: linear-gradient(135deg, var(--primary), #1a4480);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .strong .effect-value {
+            background: linear-gradient(135deg, var(--accent), #c0392b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 40px 0 20px;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .btn-download {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-download:hover {
+            background: #1a4480;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(42, 92, 170, 0.4);
+        }
+        
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background: #5a6268;
+            transform: translateY(-5px);
+        }
+        
+        .explanation {
+            background: #f0f7ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 5px solid var(--primary);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+        
+        .source {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin-top: 15px;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .chart-container {
+            height: 380px;
+            position: relative;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #1a4480, var(--primary));
+            color: rgba(255,255,255,0.85);
+            font-size: 1rem;
+        }
+        
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 40px 0;
+        }
+        
+        .timeline::before {
+            content: "";
+            position: absolute;
+            top: 40px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            z-index: 1;
+        }
+        
+        .timeline-item {
+            text-align: center;
+            width: 25%;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .timeline-point {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border: 4px solid var(--primary);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+        
+        .timeline-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-top: 20px;
+        }
+        
+        .theory-model {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .model-item {
+            flex: 1;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            margin: 0 15px;
+            position: relative;
+            border-top: 5px solid var(--primary);
+        }
+        
+        .model-item h4 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .model-item p {
+            line-height: 1.7;
+        }
+        
+        @media (max-width: 992px) {
+            .grid-3, .grid-2, .comparison, .theory-model {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline {
+                flex-direction: column;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                margin-bottom: 40px;
+            }
+            
+            .timeline::before {
+                display: none;
+            }
+            
+            .model-item {
+                margin: 0 0 30px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>议程设置理论可视化报告</h1>
+            <p class="subtitle">媒体如何影响公众议程：从传统理论到网络议程设置</p>
+            <p class="author">来源：(唐纳德·肖)Donald Shaw & (麦克斯威尔·麦克姆斯)Maxwell McCombs (1972) | 毛良斌 (2024)</p>
+        </header>
+        
+        <div class="content-section">
+            <h2>议程设置理论概述</h2>
+            <div class="explanation">
+                <p><strong>议程设置理论</strong>由(唐纳德·肖)Donald Shaw和(麦克斯威尔·麦克姆斯)Maxwell McCombs于1972年正式提出，源于1968年美国总统大选的实证研究。该理论认为：</p>
+                <ul style="padding-left: 20px; margin-top: 15px;">
+                    <li>大众传播往往不能决定人们对某一事件或意见的具体看法</li>
+                    <li>媒体可以通过提供信息和安排议题来左右人们关注哪些事实和意见</li>
+                    <li>媒体能够影响公众对议题重要性的排序和判断</li>
+                </ul>
+                <p style="margin-top: 15px;">议程设置是大众传播的重要社会功能之一，揭示了媒介如何通过赋予议题不同程度的显著性来影响公众对环境的认知。</p>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-point"></div>
+                    <h3>1968年</h3>
+                    <div class="timeline-content">
+                        <p>肖和麦克姆斯对美国总统大选进行调查，研究媒介议程对公众议程的影响</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-point"></div>
+                    <h3>1972年</h3>
+                    <div class="timeline-content">
+                        <p>正式提出议程设置理论，发表经典论文《大众传播的议程设置功能》</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-point"></div>
+                    <h3>1997年</h3>
+                    <div class="timeline-content">
+                        <p>提出第二层次议程设置（属性议程设置），关注议题属性的显著性转移</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-point"></div>
+                    <h3>2011年</h3>
+                    <div class="timeline-content">
+                        <p>麦克姆斯和郭雷提出第三层次议程设置（网络议程设置理论）</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>理论核心模型</h2>
+            <div class="theory-model">
+                <div class="model-item">
+                    <h4>第一层次议程设置</h4>
+                    <p><strong>对象显著性转移</strong></p>
+                    <p>媒体强调的议题会成为公众认为重要的议题（传统议程设置）</p>
+                    <p class="effect-value">0/1效果</p>
+                </div>
+                <div class="model-item">
+                    <h4>第二层次议程设置</h4>
+                    <p><strong>属性显著性转移</strong></p>
+                    <p>媒体强调的议题属性会影响公众对议题的理解和认知</p>
+                    <p class="effect-value">0/1/2效果</p>
+                </div>
+                <div class="model-item">
+                    <h4>第三层次议程设置</h4>
+                    <p><strong>网络显著性转移</strong></p>
+                    <p>媒体构建的议题间关联网络会影响公众的认知结构</p>
+                    <p class="effect-value">0/1/2/n效果</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>网络议程设置效果分析</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h3><i>📈</i> 效果量对比</h3>
+                    <div class="chart-container">
+                        <canvas id="effectChart"></canvas>
+                    </div>
+                    <div class="source">
+                        数据来源：毛良斌(2024)元分析结果（k=57，N=324,740）
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i>⚖️</i> 调节变量分析</h3>
+                    <div class="chart-container">
+                        <canvas id="moderatorChart"></canvas>
+                    </div>
+                    <div class="source">
+                        *Q_b值大于3.84表示显著调节效应（p<0.05）
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visual-container">
+                <div class="visual-title">
+                    <i>🔬</i> 公众议程测量方式的影响
+                </div>
+                <div class="chart-container">
+                    <canvas id="publicChart"></canvas>
+                </div>
+                <div class="explanation">
+                    <p><strong>研究发现：</strong> 媒体议程网络与公众隐性议程网络相关性(r=0.675)显著高于与公众显性议程网络的相关性(r=0.414)。显性议程网络测量需要经历个体审议过程，在此过程中个体经验、价值观等因素可能对结果产生重要影响。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>详细效果量数据</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>变量关系</th>
+                        <th>效果量数量(k)</th>
+                        <th>样本量(N)</th>
+                        <th>效果量(r)</th>
+                        <th>95%置信区间</th>
+                        <th>强度水平</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>网络议程设置总体</td>
+                        <td>57</td>
+                        <td>324,740</td>
+                        <td>0.622</td>
+                        <td>0.527-0.702</td>
+                        <td>中等</td>
+                    </tr>
+                    <tr>
+                        <td>传统议程设置</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>0.53</td>
+                        <td>0.47-0.59</td>
+                        <td>中等</td>
+                    </tr>
+                    <tr>
+                        <td>媒体→公众隐性议程</td>
+                        <td>43</td>
+                        <td>318,828</td>
+                        <td>0.675</td>
+                        <td>0.576-0.755</td>
+                        <td>中等</td>
+                    </tr>
+                    <tr>
+                        <td>媒体→公众显性议程</td>
+                        <td>14</td>
+                        <td>5,912</td>
+                        <td>0.414</td>
+                        <td>0.277-0.534</td>
+                        <td>低</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="content-section">
+            <h2>属性网络 vs 客体网络效果差异</h2>
+            <div class="comparison">
+                <div class="comparison-item strong">
+                    <h3>基于属性的议程网络</h3>
+                    <div class="effect-value">0.741</div>
+                    <p>高水平效果量</p>
+                    <div class="explanation">
+                        <p><strong>作用机制：</strong> 涉及公众的态度评价，通过"雄辩关联"强化传播效果</p>
+                    </div>
+                </div>
+                
+                <div class="comparison-item weak">
+                    <h3>基于客体的议程网络</h3>
+                    <div class="effect-value">0.415</div>
+                    <p>低水平效果量</p>
+                    <div class="explanation">
+                        <p><strong>作用机制：</strong> 仅作用于认知层面，未涉及态度评价</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-container">
+            <button class="btn btn-download" onclick="downloadFullReport()">
+                <i>📥</i> 下载完整报告图片
+            </button>
+            <button class="btn btn-reset" onclick="resetView()">
+                <i>🔄</i> 重置视图
+            </button>
+        </div>
+        
+        <footer>
+            <p>© 2023 议程设置理论可视化报告 | 数据来源：毛良斌(2024)《网络议程设置效果的元分析》，样本量 N=324,740</p>
+            <p>注：本可视化仅用于学术展示，引用请参考原始文献</p>
+        </footer>
+    </div>
+
+    <script>
+        // 效果量对比图表
+        const effectCtx = document.getElementById('effectChart').getContext('2d');
+        const effectChart = new Chart(effectCtx, {
+            type: 'bar',
+            data: {
+                labels: ['网络议程设置', '传统议程设置', '公众隐性议程', '公众显性议程'],
+                datasets: [{
+                    label: '效果量 (r)',
+                    data: [0.622, 0.53, 0.675, 0.414],
+                    backgroundColor: [
+                        'rgba(42, 92, 170, 0.8)',
+                        'rgba(42, 92, 170, 0.6)',
+                        'rgba(62, 125, 62, 0.8)',
+                        'rgba(231, 76, 60, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(42, 92, 170)',
+                        'rgb(42, 92, 170)',
+                        'rgb(62, 125, 62)',
+                        'rgb(231, 76, 60)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1.0,
+                        title: {
+                            display: true,
+                            text: '效果量 (r)',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(42, 92, 170, 0.9)',
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `效果量: ${context.parsed.y.toFixed(3)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 调节变量图表
+        const moderatorCtx = document.getElementById('moderatorChart').getContext('2d');
+        const moderatorChart = new Chart(moderatorCtx, {
+            type: 'bar',
+            data: {
+                labels: ['议题特征', '议程网络类型', '公众测量方式', '媒体类型', '数据特征'],
+                datasets: [{
+                    label: 'Q_b值',
+                    data: [7.785, 16.508, 5.002, 0.149, 3.575],
+                    backgroundColor: [
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(108, 117, 125, 0.7)',
+                        'rgba(108, 117, 125, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgb(231, 76, 60)',
+                        'rgb(231, 76, 60)',
+                        'rgb(231, 76, 60)',
+                        'rgb(108, 117, 125)',
+                        'rgb(108, 117, 125)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Q_b 统计量',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 3.84,
+                                yMax: 3.84,
+                                borderColor: 'rgba(231, 76, 60, 0.7)',
+                                borderWidth: 3,
+                                borderDash: [6, 6],
+                                label: {
+                                    display: true,
+                                    content: '显著阈值 (p<0.05)',
+                                    position: 'end',
+                                    backgroundColor: 'rgba(231, 76, 60, 0.9)',
+                                    color: 'white',
+                                    font: {
+                                        size: 12
+                                    },
+                                    padding: 5,
+                                    borderRadius: 4
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 公众议程图表
+        const publicCtx = document.getElementById('publicChart').getContext('2d');
+        const publicChart = new Chart(publicCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['隐性议程网络 (r=0.675)', '显性议程网络 (r=0.414)'],
+                datasets: [{
+                    data: [67.5, 41.4],
+                    backgroundColor: [
+                        'rgba(62, 125, 62, 0.8)',
+                        'rgba(231, 76, 60, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(62, 125, 62)',
+                        'rgb(231, 76, 60)'
+                    ],
+                    borderWidth: 2,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 14
+                            },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `效果量: ${(context.parsed).toFixed(3)/100}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 下载功能
+        function downloadFullReport() {
+            const container = document.querySelector('.container');
+            
+            html2canvas(container, {
+                scale: 3,
+                useCORS: true,
+                logging: false,
+                backgroundColor: "#ffffff"
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = '议程设置理论可视化报告.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+        
+        // 重置视图
+        function resetView() {
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
